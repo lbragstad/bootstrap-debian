@@ -1,4 +1,5 @@
 - name: bootstrap all nodes
+  gather_facts: False
   hosts: all
   roles:
   - bootstrap
