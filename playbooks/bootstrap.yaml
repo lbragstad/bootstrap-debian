@@ -1,0 +1,46 @@
+- name: bootstrap all nodes
+  gather_facts: False
+  hosts: all
+  vars:
+    - username: "{{ lookup('pipe', 'whoami') }}"
+  tasks:
+    - name: wipe message of the day
+      template:
+        src=templates/message-of-the-day
+        dest=/etc/motd
+
+    - name: install global inputrc
+      template:
+        src=templates/inputrc
+        dest=/etc/inputrc
+
+    - name: install unattended upgrades
+      apt:
+        pkg=unattended-upgrades
+        state=present
+        update_cache=yes
+
+    - name: configure auto upgrades
+      template:
+        src=templates/auto-upgrades
+        dest=/etc/apt/apt.conf.d/20auto-upgrades
+        mode=0644
+
+    - name: configure unattended upgrades
+      template:
+        src=templates/unattended-upgrades
+        dest=/etc/apt/apt.conf.d/50unattended-upgrades
+
+    - name: create an account for yourself
+      user:
+        name={{ username }}
+        groups=sudo
+        shell=/bin/bash
+
+    - name: give passwordless sudo to yourself
+      lineinfile: dest=/etc/sudoers state=present regexp='^%{{ username }} ALL\=' line='%{{ username }} ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+
+    - name: install authorized ssh key
+      authorized_key:
+        user={{ username }}
+        key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
