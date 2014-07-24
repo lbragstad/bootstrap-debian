@@ -4,7 +4,7 @@
   vars:
     - username: "{{ lookup('pipe', 'whoami') }}"
   tasks:
-    - name: wipe message of the day
+    - name: set message of the day
       template:
         src=templates/message-of-the-day
         dest=/etc/motd
