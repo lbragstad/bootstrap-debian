@@ -44,3 +44,23 @@
       authorized_key:
         user={{ username }}
         key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+    - name: install basic tools
+      apt:
+        pkg={{ item }}
+        state=present
+      with_items:
+        - git
+        - vim
+
+- name: customize personal account
+  gather_facts: False
+  hosts: all
+  user: "{{ lookup('pipe', 'whoami') }}"
+  sudo: False
+  tasks:
+    - name: clone dotfiles
+      command: git clone https://github.com/dolph/dotfiles.git ~/dotfiles
+
+    - name: symlink dotfiles
+      command: sh ~/dotfiles/symlink.sh
