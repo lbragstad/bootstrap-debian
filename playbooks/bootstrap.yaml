@@ -52,6 +52,7 @@
       with_items:
         - git
         - vim
+        - tmux
 
 - name: customize personal account
   gather_facts: False
@@ -61,6 +62,7 @@
   tasks:
     - name: clone dotfiles
       command: git clone https://github.com/lbragstad/dotfiles.git ~/dotfiles
+        creates=~/dotfiles
 
     - name: symlink dotfiles
       command: sh ~/dotfiles/symlink.sh
