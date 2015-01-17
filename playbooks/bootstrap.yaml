@@ -60,7 +60,7 @@
   sudo: False
   tasks:
     - name: clone dotfiles
-      command: git clone https://github.com/dolph/dotfiles.git ~/dotfiles
+      command: git clone https://github.com/lbragstad/dotfiles.git ~/dotfiles
 
     - name: symlink dotfiles
       command: sh ~/dotfiles/symlink.sh
