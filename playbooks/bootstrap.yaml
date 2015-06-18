@@ -54,6 +54,19 @@
         - vim
         - tmux
 
+    - name: install pyenv dependencies
+      apt:
+        pkg={{ item }}
+        state=present
+      with_items:
+        - build-essential
+        - libssl-dev
+        - zlib1g-dev
+        - libbz2-dev
+        - libreadline-dev
+        - libsqlite3-dev
+        - llvm
+
 - name: customize personal account
   gather_facts: False
   hosts: all
