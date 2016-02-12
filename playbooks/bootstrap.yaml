@@ -62,6 +62,7 @@
         - git
         - vim
         - tmux
+        - python-dev
 
     - name: fetch pip
       get_url:
