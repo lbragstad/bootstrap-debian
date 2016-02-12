@@ -40,10 +40,19 @@
     - name: give passwordless sudo to yourself
       lineinfile: dest=/etc/sudoers state=present regexp='^%{{ username }} ALL\=' line='%{{ username }} ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
 
-    - name: install authorized ssh key
+    - name: install mac ssh key
       authorized_key:
-        user={{ username }}
-        key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        user="{{ username }}"
+        key="{{ item }}"
+      with_file:
+        - public_keys/lance-mac
+
+    - name: install mac ssh key
+      authorized_key:
+        user="{{ username }}"
+        key="{{ item }}"
+      with_file:
+        - public_keys/lance-ubuntu
 
     - name: install basic tools
       apt:
@@ -54,25 +63,6 @@
         - vim
         - tmux
 
-    - name: install pyenv dependencies
-      apt:
-        pkg={{ item }}
-        state=present
-      with_items:
-        - build-essential
-        - libssl-dev
-        - zlib1g-dev
-        - libbz2-dev
-        - libreadline-dev
-        - libsqlite3-dev
-        - llvm
-
-- name: customize personal account
-  gather_facts: False
-  hosts: all
-  user: "{{ lookup('pipe', 'whoami') }}"
-  sudo: False
-  tasks:
     - name: clone dotfiles
       git:
         repo=https://github.com/lbragstad/dotfiles.git
@@ -81,25 +71,3 @@
 
     - name: symlink dotfiles
       command: sh ~/dotfiles/symlink.sh
-
-    - name: install pyenv
-      git:
-        repo=https://github.com/yyuu/pyenv.git
-        dest=~/.pyenv
-
-    - name: export pyenv root path
-      shell: echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
-
-    - name: export pyenv path
-      shell: echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
-
-    - name: install pyenv-virtuaenv
-      git:
-        repo=https://github.com/yyuu/pyenv-virtualenv.git
-        dest=~/.pyenv/plugins/pyenv-virtualenv
-
-    - name: export pyenv-virtualenv activation
-      shell: echo 'eval "$(pyenv init -)"' >> ~/.bashrc
-
-    - name: export pyenv-virtualenv activation
-      shell: echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
