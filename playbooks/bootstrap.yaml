@@ -63,6 +63,14 @@
         - vim
         - tmux
 
+    - name: fetch pip
+      get_url:
+        url=https://bootstrap.pypa.io/get-pip.py
+        dest="~/get-pip.py"
+
+    - name: install pip
+      command: python ~/get-pip.py
+
     - name: clone dotfiles
       git:
         repo=https://github.com/lbragstad/dotfiles.git
